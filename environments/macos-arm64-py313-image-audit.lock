@@ -1,0 +1,4 @@
+# Python 3.13.3 macOS arm64: existing tools plus the optional image-audit decoder.
+# Exact selected binary wheel hash; no source build or unpinned dependencies.
+-r macos-arm64-py313-dev.lock
+Pillow==13.0.0 --hash=sha256:f11a3c1358bb3c68012a7b1f41b223c3db9f7bfde90b481df028cfe1c3363313

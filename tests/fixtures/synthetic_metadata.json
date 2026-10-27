@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "dataset_id": "synthetic",
+      "release_id": "v1",
+      "sample_id": "sample-001",
+      "source_group_id": "source-001",
+      "source_video_id": "video-001",
+      "project_split": "train",
+      "identity_status": "known",
+      "subject_id": "subject-001",
+      "identity_evidence": "synthetic-evidence-001",
+      "official_split": "train",
+      "frame_index": 0,
+      "timestamp_seconds": 0.0
+    },
+    {
+      "dataset_id": "synthetic",
+      "release_id": "v1",
+      "sample_id": "sample-002",
+      "source_group_id": "source-002",
+      "source_video_id": "video-002",
+      "project_split": "validation",
+      "identity_status": "known",
+      "subject_id": "subject-002",
+      "identity_evidence": "synthetic-evidence-002",
+      "official_split": "train"
+    },
+    {
+      "dataset_id": "synthetic",
+      "release_id": "v1",
+      "sample_id": "sample-003",
+      "source_group_id": "source-003",
+      "source_video_id": "video-003",
+      "project_split": "test",
+      "identity_status": "unknown",
+      "subject_id": null,
+      "identity_evidence": null,
+      "official_split": "test"
+    }
+  ]
+}

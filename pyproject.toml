@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools==80.9.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "infant-movement"
+version = "0.1.0"
+description = "Local metadata and split audits for exploratory infant movement research"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest==8.4.2", "ruff==0.14.2"]
+image-audit = ["Pillow==13.0.0"]
+
+[project.scripts]
+infant-movement = "infant_movement.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["infant_movement*"]
+namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib -ra"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

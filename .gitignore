@@ -1,0 +1,41 @@
+# Environments, Python, editors
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Infant data, private provenance, derived assets, weights, and runs
+data/**
+!data/**/
+!data/**/.gitkeep
+manifests/**
+!manifests/.gitkeep
+artifacts/**
+!artifacts/**/
+!artifacts/**/.gitkeep
+runs/
+cache/
+.cache/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Put only reviewed aggregate reports here
+reports/private/
