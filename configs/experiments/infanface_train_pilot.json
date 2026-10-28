@@ -1,0 +1,14 @@
+{
+  "protocol_id": "infanface-train-fit-v1",
+  "sample_count": 32,
+  "seed": 42,
+  "epochs": 20,
+  "batch_size": 8,
+  "learning_rate": 0.003,
+  "crop_margin": 0.2,
+  "source_index_base": 0,
+  "annotation_frame": "stored",
+  "orientation_policy": "stored",
+  "input_size": [32, 32],
+  "device": "cpu"
+}
