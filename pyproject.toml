@@ -13,6 +13,7 @@ dependencies = []
 [project.optional-dependencies]
 dev = ["pytest==8.4.2", "ruff==0.14.2"]
 image-audit = ["Pillow==13.0.0"]
+baseline = ["Pillow==13.0.0", "torch==2.14.1"]
 
 [project.scripts]
 infant-movement = "infant_movement.cli:main"

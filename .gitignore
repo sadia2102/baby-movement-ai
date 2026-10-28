@@ -1,5 +1,6 @@
 # Environments, Python, editors
 .venv/
+.venv-baseline/
 venv/
 __pycache__/
 *.py[cod]
