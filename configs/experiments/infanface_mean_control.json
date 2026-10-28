@@ -1,0 +1,12 @@
+{
+  "protocol_id": "infanface-mean-control-v1",
+  "reference_run": "runs/infanface-train-pilot-2026-10-28",
+  "sample_count": 32,
+  "input_size": [32, 32],
+  "device": "cpu",
+  "mean_dtype": "float64",
+  "mse_atol": 1e-7,
+  "pixel_atol": 1e-6,
+  "rtol": 1e-6,
+  "paired_tie_atol": 1e-12
+}
