@@ -6,9 +6,11 @@ An independent, exploratory PyTorch research project for measuring infant facial
 
 ## Current status
 
-**M1 metadata implementation completed on 27 October 2026**, within the user's authorization for package setup, minimal dependencies, and synthetic metadata/split checks. The package has no runtime dependencies. Development and build tools are installed in an isolated local `.venv`; the tested versions and wheel hashes are recorded below. Local Git is initialized on `main`, with no remote configured.
+**M1 metadata implementation completed on 27 October 2026**, within the user's authorization for package setup, minimal dependencies, and synthetic metadata/split checks. The package has no required runtime dependencies. Development and build tools are installed in an isolated local `.venv`; the tested versions and wheel hashes are recorded below. As inspected on 28 October, the current branch is `research/infanface-e0-audit`, tracking `origin/research/infanface-e0-audit`; `origin` is `https://github.com/sadia2102/baby-movement-ai.git`. The preprocessing milestone remains local and uncommitted; it performed no uploads or pushes.
 
-**InfAnFace acquisition/schema audit and the first independent annotation reader completed on 27 October 2026.** Only the official InfAnFace archive was acquired for authorized private noncommercial E0 inspection. The package still has no runtime dependencies. No model weights, training, inference, uploads, or remote repository are involved. There are no scientific model results or audited patient/video-independent project splits; identity and source-video mappings remain UNVERIFIED. The reader preserves official metadata and fractional coordinates without assigning project partitions.
+**InfAnFace acquisition/schema audit and the first independent annotation reader completed on 27 October 2026.** Only the official InfAnFace archive was acquired for authorized private noncommercial E0 inspection. No model weights, models, training or inference are implemented. There are no scientific model results or audited patient/video-independent project splits; identity and source-video mappings remain UNVERIFIED. The reader preserves official metadata and fractional coordinates without assigning project partitions.
+
+**Image loading and landmark preprocessing completed on 28 October 2026.** The existing optional Pillow decoder now supports local ZIP image loading, explicit crops, uniform resize/padding, EXIF frame handling and forward/inverse coordinate transforms. No dependencies were added or changed. **209 synthetic tests passed.** A separate local smoke check processed 410/410 stored rasters; normalization processed 409/410 and explicitly rejected one invalid EXIF orientation tag. Source coordinate conventions and anatomical alignment remain **UNVERIFIED**. See the [preprocessing report](reports/infanface-preprocessing-2026-10-28.md) and [environment record](environments/infanface-preprocessing.md).
 
 - [Detailed research plan](research_plan.md): dataset evidence, experiment protocols, metrics, leakage controls, dependency recommendations, hardware strategy, and weaknesses.
 - [Contributor and agent rules](AGENTS.md): scope boundaries and reproducibility requirements.
@@ -103,7 +105,7 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip --disable-pip-version-check --no-cache-dir install --no-index --no-build-isolation --no-deps -e .
 ```
 
-The lock includes pip, setuptools, wheel, pytest, Ruff, and all their installed dependencies. `pyproject.toml` also declares a pinned `dev` extra; use the lock above for the verified complete environment. Avoid installing an unpinned tool midway through a milestone. M1 needs no decoder, PyTorch, torchvision, notebook runtime or accelerator tooling. The optional image-audit extra adds only Pillow; use its combined lock for the full 150-test environment. Imports, audits, tests, and lint checks make no network requests. For offline recreation, obtain the locked wheels explicitly on an authorized connection, then add `--no-index --find-links /path/to/wheels` to the locked-tools install command. Hash checking follows [pip's documented installation mode](https://pip.pypa.io/en/stable/topics/secure-installs/); package configuration follows the [PyPA guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/).
+The lock includes pip, setuptools, wheel, pytest, Ruff, and all their installed dependencies. `pyproject.toml` also declares a pinned `dev` extra; use the lock above for the verified complete environment. Avoid installing an unpinned tool midway through a milestone. M1 needs no decoder, PyTorch, torchvision, notebook runtime or accelerator tooling. The optional image-audit extra adds only Pillow and also supports preprocessing; use its combined lock for the current full synthetic suite. Imports, audits, tests, and lint checks make no network requests. For offline recreation, obtain the locked wheels explicitly on an authorized connection, then add `--no-index --find-links /path/to/wheels` to the locked-tools install command. Hash checking follows [pip's documented installation mode](https://pip.pypa.io/en/stable/topics/secure-installs/); package configuration follows the [PyPA guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/).
 
 To verify a distributable wheel locally, after the checks above:
 
@@ -155,6 +157,57 @@ From the repository root, choose **new, unused** private output names:
 ```
 
 These commands read local files, verify archive integrity before/after, print aggregates and write per-sample evidence only under `reports/private`. They refuse overwriting and make no network requests or project assignments. Source-audit completion does not imply every XMP block parsed; inspect `xml_failure_count`. Original private audit JSON, contact sheets and review decisions remain Git ignored. Do not publish per-sample hashes, metadata or candidate edges. No images or data-dependent fixtures are embedded in tests.
+
+## InfAnFace image loading and landmark preprocessing
+
+`datasets.infanface_images.open_infanface_images(path, expected_sha256=...)` reads validated samples and exact JPEG/PNG ZIP members without extraction. It verifies the receipt digest before and after the context, rejects duplicate/missing/encrypted/oversized/symlink image members, and bounds decoded pixels. Loaded images are owned RGB rasters in stored orientation; transparency is composited over white. New rasters carry no original EXIF/XMP metadata. Raw files and the immutable annotation objects are preserved. Close loaded/prepared Pillow images after use; each loaded image remains usable after its archive context closes.
+
+`preprocess_face` requires explicit `source_index_base`, `annotation_frame`, `orientation_policy`, `crop_box` and `output_size`. The output retains the original sample, transformed landmarks, 3×3 `forward.matrix` and `inverse.matrix`, crop/configuration details and separate `present`, `source_in_bounds`, `crop_in_bounds` and `output_in_bounds` flags. Out-of-bounds values are transformed without clipping; explicit `None` remains missing. The native annotation reader still rejects missing/nonfinite CSV values; it does not fabricate them. Geometric flags are not per-landmark visibility, occlusion, confidence or a preselected loss mask. A point outside the crop may map into output padding, so `output_in_bounds` alone is insufficient for supervision.
+
+**Working convention:** pixel edges span `[0,width] × [0,height]`, with centres at `(column+0.5,row+0.5)`. Raster footprint flags are half-open `[0,width) × [0,height)`. Base 0 hypothesizes that raw `(0,0)` means the first pixel centre; base 1 hypothesizes raw `(1,1)`. Conversion adds `0.5 - source_index_base` to both axes. This is a caller-declared hypothesis, **not verification of the source indexing convention**. The older annotation reader's `[0,width) × [0,height)` numeric QC remains unchanged and is a different declared check.
+
+`annotation_frame="stored"` declares raw coordinates relative to stored pixels; `"display"` declares them relative to the EXIF display raster. `orientation_policy="stored"` leaves pixels as stored; `"normalize"` applies EXIF to pixels and coordinates consistently. All eight standard orientations are supported. Invalid tags fail any requested normalization/frame conversion; an absent tag uses the identity operation without claiming verified upright content. EXIF mirrors preserve the vertex identity map **`i → i` for every index 0–67**. These are raster metadata corrections. No anatomical horizontal-flip augmentation is implemented; that requires an independently verified landmark swap map. Output metadata is cleared to prevent a second implicit EXIF rotation.
+
+Crop boxes are integer half-open `(left,top,right,bottom)` edges **in the selected processing raster**, entirely inside it. `crop_box=None` explicitly selects the whole raster. No landmark-derived crops, face detector, inferred boxes or random augmentation are implemented. If a future caller derives boxes from ground truth, its experiment must label that protocol **ground-truth-crop preprocessing** and evaluate it separately from detector-backed coverage.
+
+The cropped image is fitted with one scale `s=min(output_width/crop_width, output_height/crop_height)` and continuous centred padding. BICUBIC inverse-affine resampling avoids independent dimension rounding and preserves aspect ratio exactly. Padding is black by default; alpha compositing uses white independently. No learned normalization, tensor conversion, heatmaps or model-specific preprocessing is implied. BICUBIC affine downsampling has no separate scale-aware antialias prefilter and is not claimed to match an upstream HRNet recipe. Future integer-centre predictions must be converted to edge coordinates (add 0.5) before applying `inverse`; heatmap stride/normalization must be specified separately.
+
+Example from the repository root, using the existing `.venv` and **explicit unverified hypotheses**, with no saved image or sample-level output:
+
+```sh
+.venv/bin/python - <<'PY'
+import json
+from pathlib import Path
+from infant_movement.datasets.infanface_images import open_infanface_images, preprocess_face
+from infant_movement.datasets.landmark_geometry import transform_landmarks
+
+digest = json.loads(Path("data/raw/infanface/acquisition-receipt-2026-10-27.json").read_text())["sha256"]
+with open_infanface_images("data/raw/infanface/InfAnFace.zip", expected_sha256=digest) as images:
+    face = images.load(images.samples[0])
+    try:
+        result = preprocess_face(
+            face, source_index_base=0, annotation_frame="stored",
+            orientation_policy="stored", crop_box=None, output_size=(256, 256),
+        )
+        try:
+            recovered = transform_landmarks(result.landmarks, result.inverse)
+            assert all(abs(a-b) < 1e-8 for p,q in zip(face.sample.landmarks, recovered) for a,b in zip(p,q))
+            print("one local image checked; source assumptions remain UNVERIFIED")
+        finally:
+            result.image.close()
+    finally:
+        face.image.close()
+PY
+```
+
+Separate local-data smoke checks write only aggregate records under `reports/private`. Choose **unused** output filenames; overwriting is refused. These fixed full-raster checks use all official images only for loading/geometry QC, never to fit preprocessing or select model settings:
+
+```sh
+.venv/bin/python scripts/smoke_infanface_preprocessing.py --archive data/raw/infanface/InfAnFace.zip --receipt data/raw/infanface/acquisition-receipt-2026-10-27.json --source-index-base 0 --annotation-frame stored --orientation-policy stored --output-size 256 256 --output reports/private/infanface-preprocessing-stored-rerun.json
+.venv/bin/python scripts/smoke_infanface_preprocessing.py --archive data/raw/infanface/InfAnFace.zip --receipt data/raw/infanface/acquisition-receipt-2026-10-27.json --source-index-base 0 --annotation-frame stored --orientation-policy normalize --output-size 256 256 --output reports/private/infanface-preprocessing-normalize-rerun.json
+```
+
+`--crop-box LEFT TOP RIGHT BOTTOM` optionally supplies one explicit box, in the chosen frame, for every checked image; a single box need not fit all images. The smoke command returns 0 for complete coverage/round trips, 1 for decode/preprocessing rejections, annotation changes or excessive round-trip error, and 2 for invalid invocation/input/output. The completed stored check returned **0: 410 decoded/processed**, zero annotation changes and **one retained source-out-of-bounds landmark**. Normalization returned **1: 410 decoded, 409 processed, one invalid EXIF tag `0` rejected**. Maximum round-trip error in each run was **6.821210263296962e-13 source pixels**. Reversible arithmetic cannot establish that the chosen source origin/frame aligns landmarks anatomically. Official membership stays 210 training/200 test; identities, source groups and project partitions remain untouched.
 
 ## Metadata and grouped split audit
 
@@ -211,9 +264,9 @@ The input above is a future private file, not a provided dataset. `python -m inf
 
 ## Verification and next review boundary
 
-Current verification: **150 synthetic tests passed**, with no skips in the image-audit environment (the previous 121 plus 29 image/provenance checks); Ruff lint/format and dependency consistency passed. All 410 real images decoded, and raw checksums remained unchanged. Synthetic tests require no infant data. See [the duplicate audit](reports/infanface-duplicate-provenance-audit-2026-10-27.md) and [decoder record](environments/infanface-image-audit.md). The historical M1 and acquisition reports are unchanged. No model/accelerator or scientific generalization result is claimed.
+Current verification on **28 October 2026: 209 synthetic tests passed**, with no skips (the previous 150 plus 59 preprocessing/geometry/local-loader checks). Ruff lint/format, dependency consistency and installed-version checks against the unchanged locks passed. The separate local-data smoke results are recorded above. All 20 baseline retained files, including raw files, private inventory, historical reports/environment records and the research plan, matched their pre-milestone SHA-256 digests. Synthetic tests require no infant data. See [the preprocessing report](reports/infanface-preprocessing-2026-10-28.md) and [environment record](environments/infanface-preprocessing.md). No model/accelerator or scientific generalization result is claimed.
 
-**Stop after this bounded duplicate/provenance audit.** The next proposed step is independent adjudication of private scene/source clues and resolution of a documented grouping basis, plus an explicit coordinate/orientation policy before E1 preprocessing. Preserve official partitions as metadata; no patient/video-independent validation split can yet be certified. No project splits, weights, models, training, inference, further datasets/media, contact, uploads or remote publication are part of this phase.
+**Stop after this bounded preprocessing milestone.** The next proposed milestone is a coordinate/alignment and E1 baseline-readiness review: support the source origin and stored/display frame with evidence, independently review private alignment/source clues, resolve the invalid EXIF case and out-of-bounds handling, and freeze crop/metric conventions. Before a first model baseline, also approve a defensible evaluation/grouping protocol and a hash-locked model environment/source/weight licensing and provenance record. No patient/video-independent split can yet be certified. No project splits, weights, models, training, inference, further datasets/media, contact, uploads or pushes were introduced in this phase.
 
 ## Review focus
 
