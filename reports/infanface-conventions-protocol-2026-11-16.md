@@ -1,0 +1,24 @@
+# Synthetic coordinate and metric compatibility — fixed plan
+
+Written 16 November 2026 before implementation. The user's request to make technical progress authorizes the previously proposed synthetic-only coordinate/metric milestone. Starting HEAD is `6aaea5f` on `research/infanface-e0-audit`; correspondence and provenance-review work is already uncommitted and must be preserved. This phase performs no real-data calculation, real-image inspection, real-checkpoint access, real-data model execution, split construction, downloads of research assets, installation, contact, upload, commit, push or background job. The full baseline suite below includes existing manufactured-model and temporary synthetic-checkpoint tests. This scope wording is clarified in documentation after checks; no real-data operation occurred.
+
+## Scope and source evidence
+
+Pin the official InfAnFace repository at `329abb24a858e3591d2b63f3bc0f3f5f41ac0b56`, inspected read-only in this session. Record SHA-256s of the exact README, evaluator, dataset reader and transform text previously fetched, without vendoring or executing them. The paper is arXiv `2110.08935v3`, sections III and IV-B. Record author statements, implementation observations and unresolved dataset assumptions separately. No local annotation payload, image, learned mean/prediction or checkpoint is an input to this milestone.
+
+## Implementation
+
+1. Add standard-library-only adapters for explicitly declared base-0/base-1 pixel centres to working edges, normalized input-edge encoding, and inverse decoding. Reuse existing affine geometry; retain missing points, preserve out-of-bounds values and reject malformed/nonfinite inputs. No default source origin or inferred orientation. Leave the historical loader/preprocessor/trainer unchanged.
+2. Add an opt-in 68-slot NME wrapper around existing tested metric arithmetic. Require the caller to declare assumed Multi-PIE68 order and common pixel units. The pinned evaluator uses zero-based slots 36/45 for the target interocular distance. Fraction and percent must be separately named. Preserve undefined denominator counts and point/image coverage, with no zero fill or fallback. Explicitly distinguish fully eligible upstream-formula compatibility from the project's masked extension. A verified source-code index pair does not verify the local CSV's anatomical semantics or authorize real-data NME.
+3. Add a narrow arithmetic reference for the pinned legacy transform: square output, zero rotation, explicit forward/inverse direction, integer truncation toward zero and one-based transform interface. It is a synthetic audit tool, not replacement preprocessing. Demonstrate its quantization/non-invertibility, and do not copy the upstream positive-y target guard into our validity policy. Do not claim complete HRNet heatmap/crop/rotation parity.
+4. Add an offline synthetic verification entry point. It may read only public source metadata/configuration/lock files, never dataset or model artifacts; saved evidence goes to a new ignored private report. Imports and verification perform no networking or upstream code execution. No runtime dependencies are added.
+
+## Required evidence and checks
+
+Use independently hand-calculated 68-slot examples with a 3–4–5 eye distance and known prediction offsets, unequal masks, unsupported/zero eye denominators, absent/nonfinite eligible values, origin shifts, non-square resize/padding, EXIF edge operations without semantic index swaps, coordinate round trips and legacy quantization. Verify fraction/percentage scale, image-macro aggregation, normalization invariance under common translation/uniform scaling, and failure on mixed/unsupported declarations. Synthetic verifier expectations are written before execution; numeric tolerance for invertible geometry is `1e-10`, metric arithmetic `1e-12`. Tests must not require infant data, images or weights.
+
+Run targeted new tests, the full synthetic suite available in the preserved `.venv` (Torch modules expected to skip), lint/format and dependency checks. Run the complete `.venv-baseline` synthetic suite if needed to verify optional integration; no real image smoke check or historical metric recomputation. Record actual counts/commands and failures, not assumed historical results. Preserve existing public files with byte hashes and sealed ignored artifacts with size/mtime/inode checks; do not claim new content authentication for unopened payloads.
+
+## Completion boundary
+
+Update README/AGENTS and add a dated implementation/evidence report. Preserve the original research plan, all historical reports, previous code/locks/results and pre-existing uncommitted additions. Mark source origin/frame, independently confirmed anatomical mapping and grouping **UNVERIFIED**. No seizure or generalization claims. Stop when the synthetic utilities and verification are complete; propose one next bounded engineering task without executing it.

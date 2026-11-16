@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-16",
+  "upstream_revision": "329abb24a858e3591d2b63f3bc0f3f5f41ac0b56",
+  "files": {
+    "readme.md": {
+      "url": "https://github.com/ostadabbas/Infant-Facial-Landmark-Detection-and-Tracking/blob/329abb24a858e3591d2b63f3bc0f3f5f41ac0b56/readme.md",
+      "sha256": "37cfbdcf75c7a7a76054a419b67804e00745c6997b5320b9fbf94b21b8b6df7b"
+    },
+    "lib/core/evaluation.py": {
+      "url": "https://github.com/ostadabbas/Infant-Facial-Landmark-Detection-and-Tracking/blob/329abb24a858e3591d2b63f3bc0f3f5f41ac0b56/lib/core/evaluation.py",
+      "sha256": "8d41216253572e48377ab738383247def34bb07e41de87244f300e747e2470bf"
+    },
+    "lib/datasets/face300w.py": {
+      "url": "https://github.com/ostadabbas/Infant-Facial-Landmark-Detection-and-Tracking/blob/329abb24a858e3591d2b63f3bc0f3f5f41ac0b56/lib/datasets/face300w.py",
+      "sha256": "016198fb76d79758a2f50ffbd0207908a89bf456427ef8168ff8e8b3f45f6af2"
+    },
+    "lib/utils/transforms.py": {
+      "url": "https://github.com/ostadabbas/Infant-Facial-Landmark-Detection-and-Tracking/blob/329abb24a858e3591d2b63f3bc0f3f5f41ac0b56/lib/utils/transforms.py",
+      "sha256": "00371ba060d33710ed8a2603f58913b6d1bceac448ee57b3848586cb15d7cfb0"
+    }
+  },
+  "paper_url": "https://arxiv.org/html/2110.08935v3",
+  "implementation_observation": {
+    "normalizer_index_pair_zero_based": [
+      36,
+      45
+    ],
+    "reference_landmark_count": 68,
+    "normalization": "target outer-eye-corner distance",
+    "legacy_pixel_transform": "square/zero-rotation subset; truncation toward zero; one-based interface"
+  },
+  "author_statement": {
+    "layout": "Multi-PIE68",
+    "self_occlusion": "nearest visible facial point",
+    "metric_normalizer": "outer eye corners"
+  },
+  "unverified": [
+    "source coordinate origin",
+    "global annotation frame",
+    "independently adjudicated local anatomical slot order",
+    "subject/video independence"
+  ],
+  "raw_source_vendored": false,
+  "upstream_code_executed": false
+}

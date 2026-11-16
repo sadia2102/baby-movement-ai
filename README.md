@@ -6,7 +6,7 @@ An independent, exploratory PyTorch research project for measuring infant facial
 
 ## Current status
 
-**M1 metadata implementation completed on 27 October 2026**, within the user's authorization for package setup, minimal dependencies, and synthetic metadata/split checks. The package has no required core runtime dependencies; optional task environments are separate. At the start of the mean-shape comparison on 28 October, the checkout was clean at `39a2038` (completed training-only pilot), on `research/infanface-e0-audit`, matching the locally recorded `origin/research/infanface-e0-audit`; `origin` is `https://github.com/sadia2102/baby-movement-ai.git`. The user committed and pushed the prior milestone. The current comparison changes are local and uncommitted; this phase made no remote checks, uploads or pushes.
+**M1 metadata implementation completed on 27 October 2026**, within the user's authorization for package setup, minimal dependencies, and synthetic metadata/split checks. The package has no required core runtime dependencies; optional task environments are separate. At the start of the synthetic heatmap milestone on 16 November, the checkout was at `6aaea5f` on `research/infanface-e0-audit`, with correspondence, provenance-review and coordinate/metric work already uncommitted. Those changes were preserved. The heatmap additions are also local and uncommitted; this phase made no network request, acquisition, installation, upload, commit or push.
 
 **InfAnFace acquisition/schema audit and the first independent annotation reader completed on 27 October 2026.** Only the official InfAnFace archive was acquired for authorized private noncommercial E0 inspection. There are no audited patient/video-independent project splits; identity and source-video mappings remain UNVERIFIED. The reader preserves official metadata and fractional coordinates without assigning project partitions.
 
@@ -17,6 +17,14 @@ An independent, exploratory PyTorch research project for measuring infant facial
 **First bounded InfAnFace real-data feasibility pilot completed on 28 October 2026.** One fresh CNN trained on **32 official training images**, using ground-truth-derived crops, for **20 CPU epochs / 80 updates**. Training-set mean error fell **22.6696 → 4.5561 pixels** in 32×32 inputs; all **2,176/2,176** target slots were geometrically eligible, with no exclusions. Fixed-final reload reproduced all 32 predictions exactly. **This is training-only fit, not held-out or benchmark accuracy**. No validation/project split was created, no test image was opened, and source conventions/subject-video independence remain **UNVERIFIED**. **288 synthetic tests pass.** See the [pre-execution protocol](reports/infanface-training-pilot-protocol-2026-10-28.md) and [actual pilot report](reports/infanface-training-pilot-2026-10-28.md).
 
 **Constant-mean-shape control completed on 28 October 2026.** On the exact frozen 32-image training cohort, the CNN's input error was **4.5561 pixels** versus **4.8268** for a target-only constant mean: **0.2707 pixels / 5.61% lower**. CNN error was lower on **19/32** images and control error on **13/32**. All **2,176** points matched, with no missing-support exclusions. The fixed-final CNN reproduced its original metrics within the predeclared tolerance, with zero training updates. **310 synthetic tests pass.** This is same-cohort training fit; useful image-dependent learning and generalization remain unresolved. See the [control protocol](reports/infanface-mean-control-protocol-2026-10-28.md) and [aggregate comparison report](reports/infanface-mean-control-2026-10-28.md).
+
+**Frozen-checkpoint image-correspondence control completed on 16 November 2026.** Correct pairing reproduced the prior fit and saved predictions. One global cyclic reassignment of prepared images, keeping destination targets/masks/transforms fixed, increased input error **4.5561 → 5.3606 pixels (+17.66%)**. Correct pairing was lower on **24/32** images; reassignment was lower on **8/32**. Both conditions retained **2,176/2,176** points. **338 synthetic tests pass**, with zero training updates or test-image access. This supports a contribution from correct image–target correspondence to this training fit; oracle-crop leakage, shortcuts and generalization remain unresolved. See the [pre-results protocol](reports/infanface-correspondence-protocol-2026-11-16.md) and [aggregate report](reports/infanface-correspondence-2026-11-16.md). This single comparison is complete; another experiment requires authorization.
+
+**Metadata-only provenance/readiness review completed on 16 November 2026.** The exact ordered 32-image training cohort and its recorded metadata hashes remain consistent. Every subject, recording, source-group and session mapping remains **UNVERIFIED (32/32 each)**. Six earlier candidate pairs touch three cohort images, all linking to other training examples; none establishes a recording or identity. Retained XMP references for 20 cohort examples do not supply a grouping map. **Grouped validation remains unresolved; current evidence supports only explicitly limited descriptive work.** The review passed **116 metadata-only tests**, lint/format and dependency checks. No model/training/image-processing tests or dataset payloads were invoked; the prior 338-test result above is historical. See the [review protocol](reports/infanface-provenance-review-protocol-2026-11-16.md) and [aggregate review](reports/infanface-provenance-review-2026-11-16.md).
+
+**Synthetic coordinate/metric compatibility implemented on 16 November 2026.** Added dependency-free, explicitly declared pixel-centre/edge/normalized-coordinate adapters and an opt-in 68-slot NME wrapper using the pinned official evaluator's target-distance slots **36/45**. Source-code observations and assumed local slot order are kept distinct. Added 35 synthetic checks; the full baseline suite passes **407 tests**, with **319 passed / five expected Torch-module skips** in the preserved environment. No real-data NME, inference, imagery/checkpoint inspection or historical metric change occurred. See the [bounded plan](reports/infanface-conventions-protocol-2026-11-16.md), [implementation/evidence report](reports/infanface-conventions-2026-11-16.md) and [source registry](configs/datasets/infanface_conventions.json).
+
+**Synthetic heatmap adapter completed on 16 November 2026.** Added optional-Torch Gaussian targets, deterministic argmax decoding through recorded source inverses, and masked heatmap MSE. The fixed initial contract is input **32×32**, heatmap **8×8**, sigma **1.0**, maps `[B,K,Hh,Wh]`; 68 slots and non-square/unequal scales are tested. **61 new tests pass; the full baseline suite passes 468 tests**, with **319 passed / six expected Torch-module skips** in the preserved environment. The offline verifier passes **12/12** arithmetic checks. No model/trainer was added and no real-data processing or new experiment occurred. See the [pre-implementation protocol](reports/heatmap-adapter-protocol-2026-11-16.md) and [implementation/verification report](reports/heatmap-adapter-2026-11-16.md).
 
 - [Detailed research plan](research_plan.md): dataset evidence, experiment protocols, metrics, leakage controls, dependency recommendations, hardware strategy, and weaknesses.
 - [Contributor and agent rules](AGENTS.md): scope boundaries and reproducibility requirements.
@@ -111,7 +119,7 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip --disable-pip-version-check --no-cache-dir install --no-index --no-build-isolation --no-deps -e .
 ```
 
-The lock includes pip, setuptools, wheel, pytest, Ruff, and all their installed dependencies. `pyproject.toml` also declares a pinned `dev` extra; use the lock above for the verified preprocessing environment. Avoid installing an unpinned tool midway through a milestone. The optional image-audit extra adds only Pillow and also supports preprocessing. The original `.venv` now runs **250 tests with four optional Torch test modules skipped**; the complete baseline suite requires `.venv-baseline` below. Imports, audits, tests, and lint checks make no network requests. For offline recreation, obtain the locked wheels explicitly on an authorized connection, then add `--no-index --find-links /path/to/wheels` to the locked-tools install command. Hash checking follows [pip's documented installation mode](https://pip.pypa.io/en/stable/topics/secure-installs/); package configuration follows the [PyPA guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/).
+The lock includes pip, setuptools, wheel, pytest, Ruff, and all their installed dependencies. `pyproject.toml` also declares a pinned `dev` extra; use the lock above for the verified preprocessing environment. Avoid installing an unpinned tool midway through a milestone. The optional image-audit extra adds only Pillow and also supports preprocessing. The original `.venv` now runs **319 tests with five optional Torch test modules skipped**; the complete baseline suite requires `.venv-baseline` below. Imports, audits, tests, and lint checks make no network requests. For offline recreation, obtain the locked wheels explicitly on an authorized connection, then add `--no-index --find-links /path/to/wheels` to the locked-tools install command. Hash checking follows [pip's documented installation mode](https://pip.pypa.io/en/stable/topics/secure-installs/); package configuration follows the [PyPA guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/).
 
 To verify a distributable wheel locally, after the checks above:
 
@@ -372,7 +380,140 @@ These are records of the completed comparison, **not authorization for another c
 
 Private ignored comparison outputs include control configuration, frozen references/checkpoint hashes, code/protocol/lock/environment/Git evidence, environment-comparison details, reproduction checks, learned mean/support, targets/masks/inverses and predictions, sample-level paired differences, aggregate summary, output hashes and completion status. The original pilot and failed preflight are unchanged. Images, selected references, mean coordinates, predictions, checkpoints and per-image evidence remain private; only aggregate findings are shareable. No uploads, pushes, contacts, extra datasets/weights, identities, splits, background jobs or additional training occurred.
 
-**Stop after this comparison.** Next bounded proposal: one **frozen-checkpoint image-correspondence control**, using a single predeclared nonidentity cyclic permutation of the exact prepared training inputs, with original targets/masks/inverses and no training/new data. Compare against the already recorded correctly paired fit to assess whether correspondence contributes to the modest gain. This would remain training-only and retain oracle-crop leakage; it is **not executed here** and needs a separate protocol/authorization. Stronger coordinate evidence and defensible grouped validation remain prerequisites for generalization claims.
+That milestone stopped after its comparison. Its separately authorized frozen-checkpoint image-correspondence control is now completed below. Stronger coordinate evidence and defensible grouped validation remain prerequisites for generalization claims.
+
+## Frozen-checkpoint image-correspondence control
+
+The [pre-results protocol](reports/infanface-correspondence-protocol-2026-11-16.md), [fixed configuration](configs/experiments/infanface_correspondence.json) and [dated report](reports/infanface-correspondence-2026-11-16.md) record one completed evaluation-only comparison on the exact original ordered 32-image cohort. Destination i received the prepared image at `(i + 1) % 32`, globally across batches, while retaining its original targets, masks, crop and transforms. The original epoch-20 checkpoint stayed frozen; no optimizer was constructed or checkpoint written.
+
+| Training-cohort metric | Correct pairing | Reassigned images | Relative increase |
+|---|---:|---:|---:|
+| Normalized-coordinate MSE | 0.01366299 | 0.01853915 | 35.6888% |
+| Image-macro input-pixel error | 4.5561 | 5.3606 | 17.6570% |
+| Image-macro source-pixel error | 82.9871 | 96.2374 | 15.9667% |
+
+Correct pairing had lower Euclidean error on 24/32 images, reassignment on 8/32, with no ties. Both conditions retained all 2,176 points and 4,352 coordinate scalars. Original-evaluator reproduction and saved paired predictions matched exactly; independent float64 metrics passed the unchanged predeclared tolerances. The verified historical mean-control results were included only as context, without refitting or reevaluation. This supports a contribution from correct image–target correspondence to this training fit. It cannot establish generalization, clinical usefulness or absence of shortcuts; ground-truth-crop leakage and UNVERIFIED coordinate/identity/video evidence remain.
+
+Before evaluation, **338 synthetic tests**, Ruff lint/format (**50 Python files**), the exact 19-pin baseline inventory, both environments' dependency checks and the synthetic metadata audit passed. The preserved `.venv` passed 250 tests with five expected Torch-module skips. All historical source/lock hashes remained strict; only the previously documented editable-project Git revision field differed in environment inventory. No dependencies changed. No real preflight/reproduction failure occurred. Historical runs, failed preflight and reports remain unchanged; the new private run's 11 output-manifest entries verified successfully.
+
+Exact executed commands, for historical reference only:
+
+```sh
+.venv-baseline/bin/python scripts/verify_infanface_correspondence_checks.py --output reports/private/infanface-correspondence-software-verification-2026-11-16.json
+.venv-baseline/bin/python scripts/run_infanface_correspondence.py --config configs/experiments/infanface_correspondence.json --run-dir runs/infanface-correspondence-2026-11-16 --checks reports/private/infanface-correspondence-software-verification-2026-11-16.json
+```
+
+The new entry point refuses existing/historical paths, changed or unauthorized inputs, failed software/reproduction checks and a second comparison under this protocol. Private ignored records retain resolved config, references/permutation, tensor/environment/code/checkpoint hashes, reproduction evidence, predictions, per-image differences, aggregate metrics, status and integrity manifest. There were zero training updates or test-image accesses, with no new data, identities, splits, uploads, commits or pushes.
+
+This single comparison is complete. Its separately authorized metadata-only provenance review is completed below. Another experiment requires separate authorization.
+
+## Metadata-only provenance and validation readiness
+
+The [review protocol](reports/infanface-provenance-review-protocol-2026-11-16.md) and [dated aggregate report](reports/infanface-provenance-review-2026-11-16.md) consolidate retained evidence for the exact original usable cohort, without repeating the duplicate audit or opening archive members, imagery, overlays, annotation tables, checkpoints or predictions. Official membership/order, annotation digests, crop records and configuration remain unchanged. The private matrix retains evidence paths/hashes and null relationship values; no group keys or partitions were created.
+
+| Per-example mapping | Documented | Provisional mapping | Conflicting | UNVERIFIED |
+|---|---:|---:|---:|---:|
+| Subject | 0 | 0 | 0 | 32 |
+| Source recording/video | 0 | 0 | 0 | 32 |
+| Source group | 0 | 0 | 0 | 32 |
+| Session | 0 | 0 | 0 | 32 |
+
+Separately, six earlier candidate pairs are relevant: one provisional shared-scene clue, two unresolved presentation-source clues, and three layout-only findings. They touch three cohort images and all extend to other official training examples; none is a within-cohort pair. These clues are not documented subject/recording/group assignments. Twenty cohort examples have retained XMP references, none a verified recording map; no retained original-time strings or XMP parse failures occur among these 32. Historical global findings and unknown cross-partition relationships do not establish independence.
+
+**Decision: grouped validation remains unresolved.** Neither subject-disjoint nor source/video-disjoint validation is currently supportable. Collection batches, metadata tokens, one-image-per-group assumptions and random image splitting cannot replace supplied relationship evidence. Coordinate origin/frame, independent anatomical indexing/normalization evidence, media-rights chain and derivative redistribution permissions also remain unresolved. The author-declared Multi-PIE layout and retained noncommercial research terms are documented declarations, not full anatomical verification or legal clearance.
+
+Exact completed command:
+
+```sh
+.venv/bin/python scripts/review_infanface_provenance.py --output runs/infanface-provenance-review-2026-11-16-verified
+```
+
+The command ran only the selected metadata test modules (**116 passed**, including 34 new synthetic checks), static lint/format (**53 files**), the existing ten-pin `.venv` inventory/dependency check and synthetic metadata audit. The initial command stopped at a local-lock parser bug before classification; it is preserved separately and documented in the report. The completed review verified 116 distinct recorded file digests, including the archive as opaque bytes, and preserved historical metadata. Sealed checkpoint/prediction/image payloads were not reopened; their content-integrity claims remain historical. Private matrix, evidence/integrity records and completion/failure statuses are Git ignored.
+
+That metadata review is complete. Its grouping limitations remain unchanged. An unsent provider request was drafted in chat; no contact occurred. The user subsequently authorized the synthetic-only coordinate/metric engineering milestone below. It does not create grouping evidence or authorize further real-data calculations.
+
+## Synthetic coordinate and metric compatibility
+
+These new utilities use the standard library and existing affine/metric code, with **no dependency changes**. Existing readers, preprocessing, tensor adapters, trainers, prior tests and experiment commands are unchanged. The [source registry](configs/datasets/infanface_conventions.json) pins official commit `329abb24a858e3591d2b63f3bc0f3f5f41ac0b56` and four documentation/code hashes; it separates author statements, implementation observations and unresolved dataset assumptions. No upstream code is executed or vendored.
+
+`datasets/coordinate_conventions.py` exposes explicit base-0/base-1 centre-to-edge transforms plus normalized-edge encoding and inverse decoding. Missing points stay `None`, out-of-bounds numbers stay numerical, malformed/nonfinite values fail, and no extra half pixel is added during decoding. The caller supplies the complete origin/frame/crop/resize/padding affine. A synthetic example:
+
+```python
+from infant_movement.datasets.coordinate_conventions import (
+    source_centres_to_edges, encode_normalized_edges, decode_normalized_edges,
+)
+from infant_movement.datasets.landmark_geometry import crop_geometry, letterbox_geometry
+
+_, crop, size = crop_geometry((2, 1, 8, 5), (10, 6))
+resize, _, _ = letterbox_geometry(size, (12, 12))
+forward = source_centres_to_edges(source_index_base=0).then(crop).then(resize)
+points = ((3.0, 2.0), None)
+normalized = encode_normalized_edges(points, forward=forward, output_size=(12, 12))
+recovered = decode_normalized_edges(normalized, inverse=forward.inverse(), output_size=(12, 12))
+# normalized[0] is approximately (3/12, 5/12); recovered retains source coordinates/None.
+```
+
+`evaluation/infanface_conventions.py` adds `infanface_reference_nme(..., slot_order="assumed-multipie68", units="source-pixels" | "input-pixels")`. It requires exactly 68 slots, boolean masks and coordinates in common pixel units. The pinned official evaluator divides mean Euclidean point error by the ground-truth distance between zero-based slots **36/45**; the paper identifies outer eye corners. This is a documented implementation reference, **not independent verification of our local raw slot/frame/origin conventions**.
+
+`nme_fraction` and `nme_percent` are explicitly separate (multiply by 100); NME can exceed 100%. Missing/zero denominators remain undefined without fallback or zero fill. Point/image and normalized-image coverage stay separate, including total undefined normalizers and no-target images. All-68-point eligibility reproduces the upstream formula arithmetically; partial masks are explicitly labeled as the **project's extension**. Independent x/W,y/H values from a non-square image must be returned to common pixel units before this metric. The new wrapper is not connected to real-data entry points, and historical real-data NME remains uncomputed.
+
+A separate `legacy_hrnet_pixel_reference` documents only the official **square-output, zero-rotation** centre/scale transform arithmetic. Its one-based interface and integer truncation lose subpixel information. It is an audit reference, not replacement preprocessing, a full decoder or a crop/rotation-parity claim. The reversible affine/edge adapters keep fractions. The upstream positive-y target guard is not adopted as a visibility/validity rule. The paper also documents self-occluded targets at the nearest visible facial point; these are not automatically hidden anatomical projections or per-point visibility labels.
+
+Actual verification: **407 tests passed** in `.venv-baseline`; **319 passed with five expected Torch-module skips** in `.venv`. Lint/format passed (**57 Python files**), both dependency checks passed, and verifier subprocesses checked exact existing inventories of **10** and **19** pins respectively, plus the editable project. No packages or locks changed. The full baseline suite includes existing manufactured-model and temporary synthetic-checkpoint tests only. The new 35 cases use no images/models and cover hand arithmetic, masks/undefined denominators, source units/origin declarations, non-square geometry, EXIF edge mappings and legacy quantization. The standalone verifier passed **9/9** checks with maximum round-trip error **4.4409e-16 source pixels**, loading no Pillow/Torch/NumPy/torchvision modules.
+
+Exact executed offline commands (private output refuses overwrite):
+
+```sh
+.venv/bin/python -m pytest -q -p no:cacheprovider
+.venv-baseline/bin/python -m pytest -q -p no:cacheprovider
+.venv/bin/python -m ruff check --no-cache .
+.venv/bin/python -m ruff format --no-cache --check .
+.venv/bin/python -m pip --disable-pip-version-check --no-cache-dir check
+.venv-baseline/bin/python -m pip --disable-pip-version-check --no-cache-dir check
+.venv/bin/python scripts/verify_infanface_conventions.py --output reports/private/infanface-conventions-verification-2026-11-16.json
+```
+
+For routine repeated arithmetic checks, omit `--output`; stdout contains synthetic aggregate results. Use an unused filename under `reports/private` when saving fresh evidence. Public/resolved symlink-escape destinations are refused. The verifier reads public source metadata/configuration/lock files only and records code/source/environment/Git evidence, with no network, real-data NME or historical-results change. Tests deny research-artifact/network access during that subprocess.
+
+All earlier uncommitted correspondence/provenance additions and historical reports/results are retained. Of 116 pre-existing public files, only README/AGENTS were intentionally updated; other 114 hashes match. All 135 prior sealed-artifact size/mtime/inode records match; those payloads were not opened for fresh hash authentication. Source origin/frame, independently confirmed anatomy, grouping and derivative-rights gaps remain **UNVERIFIED**. No email, real inference/training, split creation, asset acquisition, commit or push occurred.
+
+That synthetic milestone stopped after verification. Its separately authorized heatmap adapter is now completed below. Grouped validation remains unresolved.
+
+## Synthetic heatmap targets, decoding and loss
+
+`datasets/landmark_heatmaps.py` is an optional, separately imported Torch adapter using the unchanged `.venv-baseline`. Sizes are `(width,height)` while map tensors are `[B,K,Hh,Wh]`. Input landmarks are explicit **input-edge** coordinates `[B,K,2]`, with boolean eligibility `[B,K]`. The adapter samples unnormalized Gaussians at cell centres `(column+0.5,row+0.5)` using fractional centres `(x*Wh/W,y*Hh/H)`. Finite grid boundaries truncate tails without peak/sum normalization. Original coordinates, missing NaN pairs, requested masks and effective footprint masks stay explicit; out-of-bounds numbers are retained, never moved or clamped.
+
+`decode_argmax` returns heatmap-cell centres, input edges and source coordinates through a complete recorded float64 inverse, requiring explicit source-origin/frame declarations. It preserves slots, chooses the first row-major exact maximum, reports ties, and leaves flat/all-zero maps undefined with false support masks. Nonfinite eligible predictions fail. Raw peaks are scores, not calibrated probabilities. At 32×32/8×8, ideal nearest-centre argmax quantization can reach **two input pixels per axis**; affine inversion does not recover the discarded subpixel position.
+
+`masked_heatmap_mse` selects eligible maps before subtraction/squaring, accumulates in float64 and divides by `eligible_landmark_slots*Hh*Wh`. Invalid NaNs have no contribution or gradient. Zero supervision returns `loss=None` and denominator zero. Coverage is explicit. This is point/cell-weighted loss, separate from image-macro landmark errors. No model, optimizer, training-loop, NME or historical preprocessing change is connected to it.
+
+```python
+import torch
+from infant_movement.datasets.coordinate_conventions import source_centres_to_edges
+from infant_movement.datasets.landmark_heatmaps import HeatmapConfig, generate_heatmaps, decode_argmax
+
+cfg = HeatmapConfig(input_size=(32, 32), heatmap_size=(8, 8), sigma=1.0)
+edges = torch.tensor([[[10.0, 14.0]] * 68])  # manufactured input-edge points
+target = generate_heatmaps(edges, torch.ones((1, 68), dtype=torch.bool), config=cfg)
+inverse = torch.tensor([source_centres_to_edges(source_index_base=0).inverse().matrix],
+                       dtype=torch.float64)
+decoded = decode_argmax(target.heatmaps, target.eligible, inverse=inverse,
+                        source_index_base=0, annotation_frame="stored", config=cfg)
+# Heatmap centre (2.5,3.5), input edge (10,14), synthetic source number (9.5,13.5).
+```
+
+Exact completed software gate and saved arithmetic verifier:
+
+```sh
+.venv-baseline/bin/python scripts/verify_infanface_pilot_checks.py --output reports/private/heatmap-adapter-software-verification-2026-11-16.json
+.venv-baseline/bin/python scripts/verify_heatmap_adapter.py --run-dir runs/synthetic-heatmap-adapter-2026-11-16
+```
+
+The first command runs the existing offline full-suite/lint/format/dependency gate, including only manufactured model/checkpoint tests. The second creates no model or checkpoint and exposes no dataset/archive/checkpoint argument. It records config, source/environment hashes, arithmetic and completion status in an unused ignored directory; omitting `--run-dir` prints synthetic checks without saving. Existing/historical paths and symlink escapes are refused.
+
+Actual verifier results include unnormalized fractional peak **0.9370674634**, expected input quantization error **1.4422205102 pixels**, non-square source inversion error **0**, masked loss **34/6**, and maximum gradient discrepancy **0**. These are manufactured arithmetic results, not landmark-model accuracy. Both dependency checks, exact 19-pin baseline and ten-pin preserved inventories, lint and formatting (**60 files**) passed. The known optional NumPy-bridge warning remains; no bridge is used and no dependency changed.
+
+All earlier code/config/tests/reports and sealed artifacts were preserved. Source origin/frame, independently confirmed local anatomy, grouping and derivative-rights evidence remain **UNVERIFIED**. **Stop after this milestone.** Proposed next bounded technical step: a synthetic-only small heatmap-head forward/loss/backward interface smoke check under a separate protocol, with no real data or training experiment. A real pilot additionally needs scientific/data prerequisites and explicit authorization.
 
 ## Review focus
 

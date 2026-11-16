@@ -1,0 +1,16 @@
+{
+  "protocol_id": "infanface-image-correspondence-v1",
+  "reference_run": "runs/infanface-train-pilot-2026-10-28",
+  "mean_reference_run": "runs/infanface-mean-control-2026-10-28-verified",
+  "sample_count": 32,
+  "input_size": [32, 32],
+  "device": "cpu",
+  "batch_size": 8,
+  "permutation": "destination_i_gets_prepared_image_at_(i+1)%32",
+  "mse_atol": 1e-7,
+  "pixel_atol": 1e-6,
+  "rtol": 1e-6,
+  "prediction_atol": 0,
+  "prediction_rtol": 0,
+  "paired_tie_atol": 1e-12
+}
